@@ -1,17 +1,142 @@
+<!DOCTYPE html>
 <html>
 <head>
-<script type="text/javascript src="convert.js">
-</script>
-<title>
-Nothing here!
-</title>
+    <title>Number Conversion</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+			box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+			margin: 0 10px 10px 10px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-<h1>
-NOSTALGIA! 
-</h1>
-<p>
-NO TRACKING! NO COOKIES! NO BS! HTML/CSS/JS (if necessary) FTW! ACTUALLY LOADS INSTEAD OF TAKING 20 YEARS PER PAGE! WELCOME TO 1999 ENJOY YOUR STAY!!!
-</p>
+    <div class="container">
+        <h2>Number Conversion</h2>
+        <label for="integer">Integer:</label>
+        <textarea id="integer" rows="1" cols="20"></textarea>
+		<button id="submitInteger">Convert Integer</button>
+        <label for="binary">Binary:</label>
+        <textarea id="binary" rows="1" cols="20"></textarea>
+		<button id="submitBinary">Convert Binary</button>
+        <label for="hexadecimal">Hexadecimal:</label>
+		
+        <textarea id="hexadecimal" rows="1" cols="20"></textarea>
+		<button id="submitHexadecimal">Convert Hexadecimal</button>
+        <label for="base64">Base64:</label>
+        <textarea id="base64" rows="1" cols="20"></textarea>
+		<button id="submitBase64">Convert Base64</button>
+        
+        
+        <div class="error" id="error"></div>
+    </div>
+
+    <script>
+        var integerTextarea = document.getElementById("integer");
+        var binaryTextarea = document.getElementById("binary");
+        var hexadecimalTextarea = document.getElementById("hexadecimal");
+        var base64Textarea = document.getElementById("base64");
+        var submitIntegerButton = document.getElementById("submitInteger");
+        var submitBinaryButton = document.getElementById("submitBinary");
+        var submitHexadecimalButton = document.getElementById("submitHexadecimal");
+        var submitBase64Button = document.getElementById("submitBase64");
+        var errorDiv = document.getElementById("error");
+
+        function clearError() {
+            errorDiv.textContent = "";
+        }
+
+        submitIntegerButton.addEventListener("click", function() {
+            clearError();
+            var integerValue = integerTextarea.value.trim();
+            if (/^[0-9]+$/.test(integerValue)) {
+                binaryTextarea.value = parseInt(integerValue).toString(2);
+                hexadecimalTextarea.value = parseInt(integerValue).toString(16);
+                base64Textarea.value = btoa(integerValue);
+            } else {
+                errorDiv.textContent = "Invalid integer format.";
+            }
+        });
+
+        submitBinaryButton.addEventListener("click", function() {
+            clearError();
+            var binaryValue = binaryTextarea.value.trim();
+            if (/^[01]+$/.test(binaryValue)) {
+                integerTextarea.value = parseInt(binaryValue, 2).toString();
+                hexadecimalTextarea.value = parseInt(binaryValue, 2).toString(16);
+                base64Textarea.value = btoa(parseInt(binaryValue, 2).toString());
+            } else {
+                errorDiv.textContent = "Invalid binary format.";
+            }
+        });
+
+        submitHexadecimalButton.addEventListener("click", function() {
+            clearError();
+            var hexadecimalValue = hexadecimalTextarea.value.trim();
+            if (/^[0-9A-Fa-f]+$/.test(hexadecimalValue)) {
+                integerTextarea.value = parseInt(hexadecimalValue, 16).toString();
+                binaryTextarea.value = parseInt(hexadecimalValue, 16).toString(2);
+                base64Textarea.value = btoa(parseInt(hexadecimalValue, 16).toString());
+            } else {
+                errorDiv.textContent = "Invalid hexadecimal format.";
+            }
+        });
+
+        submitBase64Button.addEventListener("click", function() {
+            clearError();
+            var base64Value = base64Textarea.value.trim();
+            try {
+                var decodedValue = atob(base64Value);
+                integerTextarea.value = decodedValue;
+                binaryTextarea.value = parseInt(decodedValue).toString(2);
+                hexadecimalTextarea.value = parseInt(decodedValue).toString(16);
+            } catch (error) {
+                errorDiv.textContent = "Invalid Base64 format.";
+            }
+        });
+    </script>
 </body>
 </html>
