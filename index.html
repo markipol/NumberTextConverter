@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <title>Number Conversion</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -33,7 +31,7 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 3px;
-			box-sizing: border-box;
+            box-sizing: border-box;
         }
 
         .input-container {
@@ -49,7 +47,6 @@
             border: none;
             border-radius: 3px;
             cursor: pointer;
-			
         }
 
         button:hover {
@@ -61,26 +58,9 @@
             font-weight: bold;
         }
 
-        /* Mobile-friendly styles */
         @media screen and (max-width: 500px) {
             .container {
                 max-width: 100%;
-            }
-
-            .input-container {
-                margin-bottom: 10px;
-            }
-
-            label {
-                font-size: 0.9em;
-            }
-
-            textarea {
-                font-size: 1em;
-            }
-
-            button {
-                font-size: 1em;
             }
         }
     </style>
@@ -88,92 +68,118 @@
 <body>
     <div class="container">
         <h2>Number Conversion</h2>
+
+        <div class="input-container">
+            <label for="string">String:</label>
+            <textarea id="string" rows="1" cols="20"></textarea>
+            <button id="submitString">Submit as String</button>
+        </div>
+
         <div class="input-container">
             <label for="integer">Integer:</label>
             <textarea id="integer" rows="1" cols="20"></textarea>
             <button id="submitInteger">Submit as Integer</button>
         </div>
+
         <div class="input-container">
             <label for="binary">Binary:</label>
             <textarea id="binary" rows="1" cols="20"></textarea>
             <button id="submitBinary">Submit as Binary</button>
         </div>
+
         <div class="input-container">
             <label for="hexadecimal">Hexadecimal:</label>
             <textarea id="hexadecimal" rows="1" cols="20"></textarea>
             <button id="submitHexadecimal">Submit as Hexadecimal</button>
         </div>
+
         <div class="input-container">
             <label for="base64">Base64:</label>
             <textarea id="base64" rows="1" cols="20"></textarea>
             <button id="submitBase64">Submit as Base64</button>
         </div>
+
         <div class="error" id="error"></div>
     </div>
 
     <script>
-        var integerTextarea = document.getElementById("integer");
-        var binaryTextarea = document.getElementById("binary");
-        var hexadecimalTextarea = document.getElementById("hexadecimal");
-        var base64Textarea = document.getElementById("base64");
-        var submitIntegerButton = document.getElementById("submitInteger");
-        var submitBinaryButton = document.getElementById("submitBinary");
-        var submitHexadecimalButton = document.getElementById("submitHexadecimal");
-        var submitBase64Button = document.getElementById("submitBase64");
-        var errorDiv = document.getElementById("error");
+        const stringTextarea = document.getElementById("string");
+        const integerTextarea = document.getElementById("integer");
+        const binaryTextarea = document.getElementById("binary");
+        const hexadecimalTextarea = document.getElementById("hexadecimal");
+        const base64Textarea = document.getElementById("base64");
+
+        const submitStringButton = document.getElementById("submitString");
+        const submitIntegerButton = document.getElementById("submitInteger");
+        const submitBinaryButton = document.getElementById("submitBinary");
+        const submitHexadecimalButton = document.getElementById("submitHexadecimal");
+        const submitBase64Button = document.getElementById("submitBase64");
+        const errorDiv = document.getElementById("error");
 
         function clearError() {
             errorDiv.textContent = "";
         }
 
-        submitIntegerButton.addEventListener("click", function() {
+        submitStringButton.addEventListener("click", () => {
             clearError();
-            var integerValue = integerTextarea.value.trim();
-            if (/^[0-9]+$/.test(integerValue)) {
-                binaryTextarea.value = parseInt(integerValue).toString(2);
-                hexadecimalTextarea.value = parseInt(integerValue).toString(16);
-                base64Textarea.value = btoa(integerValue);
+            const str = stringTextarea.value;
+            if (str === "") return errorDiv.textContent = "Empty string not allowed.";
+
+            const asciiInts = [...str].map(c => c.charCodeAt(0));
+            const binary = asciiInts.map(n => n.toString(2).padStart(8, '0')).join(" ");
+            const hex = asciiInts.map(n => n.toString(16).padStart(2, '0')).join(" ");
+
+            integerTextarea.value = asciiInts.join(" ");
+            binaryTextarea.value = binary;
+            hexadecimalTextarea.value = hex;
+            base64Textarea.value = btoa(str);
+        });
+
+        submitIntegerButton.addEventListener("click", () => {
+            clearError();
+            const intStr = integerTextarea.value.trim();
+            if (/^(\d+\s*)+$/.test(intStr)) {
+                const nums = intStr.split(/\s+/).map(n => parseInt(n));
+                stringTextarea.value = nums.map(n => String.fromCharCode(n)).join("");
+                binaryTextarea.value = nums.map(n => n.toString(2).padStart(8, '0')).join(" ");
+                hexadecimalTextarea.value = nums.map(n => n.toString(16).padStart(2, '0')).join(" ");
+                base64Textarea.value = btoa(stringTextarea.value);
             } else {
-                errorDiv.textContent = "Invalid integer format.";
+                errorDiv.textContent = "Invalid integer list.";
             }
         });
 
-        submitBinaryButton.addEventListener("click", function() {
+        submitBinaryButton.addEventListener("click", () => {
             clearError();
-            var binaryValue = binaryTextarea.value.trim();
-            if (/^[01]+$/.test(binaryValue)) {
-                integerTextarea.value = parseInt(binaryValue, 2).toString();
-                hexadecimalTextarea.value = parseInt(binaryValue, 2).toString(16);
-                base64Textarea.value = btoa(parseInt(binaryValue, 2).toString());
+            const binaryStr = binaryTextarea.value.trim();
+            if (/^([01]{8}\s*)+$/.test(binaryStr)) {
+                const chars = binaryStr.split(/\s+/).map(b => String.fromCharCode(parseInt(b, 2)));
+                const str = chars.join("");
+                stringTextarea.value = str;
+                const asciiInts = [...str].map(c => c.charCodeAt(0));
+                integerTextarea.value = asciiInts.join(" ");
+                hexadecimalTextarea.value = asciiInts.map(n => n.toString(16).padStart(2, '0')).join(" ");
+                base64Textarea.value = btoa(str);
             } else {
-                errorDiv.textContent = "Invalid binary format.";
+                errorDiv.textContent = "Binary must be groups of 8 bits.";
             }
         });
 
-        submitHexadecimalButton.addEventListener("click", function() {
+        submitHexadecimalButton.addEventListener("click", () => {
             clearError();
-            var hexadecimalValue = hexadecimalTextarea.value.trim();
-            if (/^[0-9A-Fa-f]+$/.test(hexadecimalValue)) {
-                integerTextarea.value = parseInt(hexadecimalValue, 16).toString();
-                binaryTextarea.value = parseInt(hexadecimalValue, 16).toString(2);
-                base64Textarea.value = btoa(parseInt(hexadecimalValue, 16).toString());
+            const hexStr = hexadecimalTextarea.value.trim().replace(/\s+/g, '');
+            if (/^([0-9a-fA-F]{2})+$/.test(hexStr)) {
+                const chars = hexStr.match(/.{1,2}/g).map(h => String.fromCharCode(parseInt(h, 16)));
+                const str = chars.join("");
+                stringTextarea.value = str;
+                const asciiInts = [...str].map(c => c.charCodeAt(0));
+                integerTextarea.value = asciiInts.join(" ");
+                binaryTextarea.value = asciiInts.map(n => n.toString(2).padStart(8, '0')).join(" ");
+                base64Textarea.value = btoa(str);
             } else {
-                errorDiv.textContent = "Invalid hexadecimal format.";
+                errorDiv.textContent = "Invalid hex format.";
             }
         });
 
-        submitBase64Button.addEventListener("click", function() {
+        submitBase64Button.addEventListener("click", () => {
             clearError();
-            var base64Value = base64Textarea.value.trim();
-            try {
-                var decodedValue = atob(base64Value);
-                integerTextarea.value = decodedValue;
-                binaryTextarea.value = parseInt(decodedValue).toString(2);
-                hexadecimalTextarea.value = parseInt(decodedValue).toString(16);
-            } catch (error) {
-                errorDiv.textContent = "Invalid Base64 format.";
-            }
-        });
-    </script>
-</body>
-</html>
