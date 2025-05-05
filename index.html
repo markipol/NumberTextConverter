@@ -89,6 +89,11 @@
     <div class="container">
         <h2>Number Conversion</h2>
         <div class="input-container">
+            <label for="string">String:</label>
+            <textarea id="string" rows="1" cols="20"></textarea>
+            <button id="submitString">Submit String</button>
+        </div>
+        <div class="input-container">
             <label for="integer">Integer:</label>
             <textarea id="integer" rows="1" cols="20"></textarea>
             <button id="submitInteger">Submit as Integer</button>
@@ -112,20 +117,73 @@
     </div>
 
     <script>
+        var stringTextarea = document.getElementById("string");
         var integerTextarea = document.getElementById("integer");
         var binaryTextarea = document.getElementById("binary");
         var hexadecimalTextarea = document.getElementById("hexadecimal");
         var base64Textarea = document.getElementById("base64");
-        var submitIntegerButton = document.getElementById("submitInteger");
+        
+
+        var submitStringButton = document.getElementById("submitString");
         var submitBinaryButton = document.getElementById("submitBinary");
         var submitHexadecimalButton = document.getElementById("submitHexadecimal");
         var submitBase64Button = document.getElementById("submitBase64");
+        var submitIntegerButton = document.getElementById("submitInteger");
         var errorDiv = document.getElementById("error");
 
         function clearError() {
             errorDiv.textContent = "";
         }
 
+        function stringToHex(str) {
+            return [...str]
+                .map(char => char.charCodeAt(0).toString(16).padStart(2, '0'))
+                .join('')
+                .toUpperCase();
+        }
+
+        function hexToString(hex) {
+            let result = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                result += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+            }
+            return result;
+        }
+        function stringToAsciiInts(str) {
+            return [...str]
+                .map(char => char.charCodeAt(0))
+                .join(' ');
+        }
+        function stringToBase64(str) {
+            try {
+                return btoa(str);
+            } catch (e) {
+                return "Invalid input for base64";
+            }
+        }
+        function hexToBinary(hex) {
+            return hex
+                .match(/.{1,2}/g) // group into byte pairs (e.g., '4A', '6F')
+                .map(byte => parseInt(byte, 16).toString(2).padStart(8, '0'))
+                .join(' ');
+        }
+        submitStringButton.addEventListener("click", function() {
+            clearError();
+            var stringValue = stringTextarea.value.trim();
+            
+            
+            const hex = stringToHex(stringValue);
+            const ascii = stringToAsciiInts(stringValue);
+            const b64 = stringToBase64(stringValue);
+            const bin = hexToBinary(hex);
+
+            integerTextarea.value = ascii;
+            hexadecimalTextarea.value = hex;
+            base64Textarea.value = b64;
+            binaryTextarea.value = bin;
+            
+            
+        });
         submitIntegerButton.addEventListener("click", function() {
             clearError();
             var integerValue = integerTextarea.value.trim();
