@@ -104,7 +104,7 @@
             <button id="submitBinary">Submit as Binary</button>
         </div>
         <div class="input-container">
-            <label for="hexadecimal">Hexadecimal:</label>
+            <label for="hexadecimal">Hexadecimal (number):</label>
             <textarea id="hexadecimal" rows="1" cols="20"></textarea>
             <button id="submitHexadecimal">Submit as Hexadecimal</button>
         </div>
@@ -112,6 +112,11 @@
             <label for="base64">Base64:</label>
             <textarea id="base64" rows="1" cols="20"></textarea>
             <button id="submitBase64">Submit as Base64</button>
+        </div>
+        <div class="input-container">
+            <label for="hexToAscii">Hex (string of 2 byte chars):</label>
+            <textarea id="hexToAscii" rows="1" cols="20"></textarea>
+            <button id="submitHexToAscii">Decode Hex to Text</button>
         </div>
         <div class="error" id="error"></div>
     </div>
@@ -122,6 +127,7 @@
         var binaryTextarea = document.getElementById("binary");
         var hexadecimalTextarea = document.getElementById("hexadecimal");
         var base64Textarea = document.getElementById("base64");
+        var hexToAsciiTextarea = document.getElementById("hexToAscii");
         
 
         var submitStringButton = document.getElementById("submitString");
@@ -129,6 +135,7 @@
         var submitHexadecimalButton = document.getElementById("submitHexadecimal");
         var submitBase64Button = document.getElementById("submitBase64");
         var submitIntegerButton = document.getElementById("submitInteger");
+        var submitHexToAsciiButton = document.getElementById("submitHexToAscii");
         var errorDiv = document.getElementById("error");
 
         function clearError() {
@@ -166,6 +173,18 @@
                 .match(/.{1,2}/g) // group into byte pairs (e.g., '4A', '6F')
                 .map(byte => parseInt(byte, 16).toString(2).padStart(8, '0'))
                 .join(' ');
+        }
+        function parseHexToText(hexInput) {
+            // Remove any non-hex characters (except space), then split
+            const hex = hexInput.replace(/[^0-9A-Fa-f]/g, '');
+            if (hex.length % 2 !== 0) return "❌ Invalid hex length";
+
+            let result = '';
+            for (let i = 0; i < hex.length; i += 2) {
+                const byte = hex.substring(i, i + 2);
+                result += String.fromCharCode(parseInt(byte, 16));
+            }
+            return result;
         }
         submitStringButton.addEventListener("click", function() {
             clearError();
@@ -230,6 +249,16 @@
                 hexadecimalTextarea.value = parseInt(decodedValue).toString(16);
             } catch (error) {
                 errorDiv.textContent = "Invalid Base64 format.";
+            }
+        });
+        submitHexToAsciiButton.addEventListener("click", function(){
+            clearError();
+            var hexToAsciiValue = hexToAsciiTextarea.value.trim();
+            try {
+                var decodedValue = parseHexToText(hexToAsciiValue)
+                stringTextarea.value = decodedValue;
+            } catch (error) {
+                errorDiv.textContent = "Invalid hex format.";
             }
         });
     </script>
